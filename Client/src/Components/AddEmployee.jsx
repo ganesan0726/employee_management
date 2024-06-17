@@ -16,7 +16,7 @@ const AddEmployee = () => {
 
   return (
     <div className="d-flex justify-content-center align-items-center mt-3">
-      <div className="p-3 rounded-3 w-50 border shadow">
+      <div className="p-3 rounded-3 w-50 border shadow-sm form-control">
         <h3 className="text-center">Add Employee</h3>
         <form className="row g-1" onSubmit={(e) => e.preventDefault()}>
           <div className="col-12">
@@ -136,7 +136,7 @@ const AddEmployee = () => {
               <div className="text-danger">{validationError.startDate}</div>
             )}
           </div>
-          <div className="col-12 mt-3">
+          <div className="col-12 mt-3 mb-5">
             <button
               type="submit"
               className="btn btn-primary w-100"

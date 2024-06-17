@@ -1,9 +1,27 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
+import axios from "axios";
 import { StoreContext } from "../Context/storeContext";
 
 const Department = () => {
-  const { departmentList } = useContext(StoreContext);
+  const { departmentList, setDepartmentList } = useContext(StoreContext);
+
+  useEffect(() => {
+    const fetchDepartments = async () => {
+      try {
+        const result = await axios.get("http://localhost:8080/auth/department");
+        if (result.data.Status) {
+          setDepartmentList(result.data.Result);
+        } else {
+          alert(result.data.Error);
+        }
+      } catch (err) {
+        console.error("Error fetching departments:", err);
+      }
+    };
+
+    fetchDepartments();
+  }, []);
   return (
     <div className="px-5 mt-3">
       <div className="d-flex justify-content-center">

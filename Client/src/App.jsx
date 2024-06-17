@@ -12,6 +12,7 @@ const AddDepartment = lazy(() => import("./Components/AddDepartment"));
 const AddEmployee = lazy(() => import("./Components/AddEmployee"));
 const EditEmployee = lazy(() => import("./Components/EditEmployee"));
 const Login = lazy(() => import("./Components/Login"));
+import "./Components/style.css";
 
 const App = () => {
   return (
