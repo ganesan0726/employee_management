@@ -252,11 +252,6 @@ const StoreContextProvider = (props) => {
     );
     try {
       if (response.data) {
-        // setEmployeeList(
-        //   employeeList.map((item) =>
-        //     item.id === id ? { ...response.data } : item,
-        //   ),
-        // );
         navigate("/dashboard/employee");
       } else {
         alert(response.data.Error);
