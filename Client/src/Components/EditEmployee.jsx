@@ -104,14 +104,14 @@ const EditEmployee = () => {
             </select>
           </div>
           <div className="col-12">
-            <label htmlFor="inputStartDate" className="form-label">
+            <label htmlFor="date-picker" className="form-label">
               Start Date
             </label>
             <div className="mt-auto">
               <DatePicker
                 id="date-picker"
                 className="form-control rounded-2 mt-2"
-                style="width:100px,"
+                style="width:100px"
                 selected={editEmployeeDetails.startDate}
                 onChange={handleDateChange_2}
                 dateFormat="yyyy-MM-dd"

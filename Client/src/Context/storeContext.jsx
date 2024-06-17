@@ -8,6 +8,7 @@ export const StoreContext = createContext(null);
 const StoreContextProvider = (props) => {
   const [employeeList, setEmployeeList] = useState([]);
   const [departmentList, setDepartmentList] = useState([]);
+  const [department, setDepartment] = useState();
   const [employeeDetails, setEmployeeDetails] = useState({
     name: "",
     email: "",
@@ -29,8 +30,45 @@ const StoreContextProvider = (props) => {
     password: "",
   });
   const [error, setError] = useState(null);
-  const [userRoles, setUserRoles] = useState();
   const [validationError, setValidationError] = useState({});
+
+  // getting Local stoarage value :
+
+  const userRole = localStorage.getItem("userRole");
+
+  useEffect(() => {
+    const fetchEmployees = async () => {
+      try {
+        const result = await axios.get("http://localhost:8080/auth/employees");
+        if (result.data.Status) {
+          setEmployeeList(result.data.Result);
+        } else {
+          alert(result.data.Error);
+        }
+      } catch (err) {
+        console.error("Error fetching employees:", err);
+      }
+    };
+
+    fetchEmployees();
+  }, [setEmployeeList]);
+
+  useEffect(() => {
+    const fetchDepartments = async () => {
+      try {
+        const result = await axios.get("http://localhost:8080/auth/department");
+        if (result.data.Status) {
+          setDepartmentList(result.data.Result);
+        } else {
+          alert(result.data.Error);
+        }
+      } catch (err) {
+        console.error("Error fetching departments:", err);
+      }
+    };
+
+    fetchDepartments();
+  }, [setDepartmentList]);
 
   //Validation:
 
@@ -50,40 +88,6 @@ const StoreContextProvider = (props) => {
   const validatePosition = (position) => {
     return position.length > 0;
   };
-
-  useEffect(() => {
-    const fetchEmployees = async () => {
-      try {
-        const result = await axios.get("http://localhost:8080/auth/employees");
-        if (result.data.Status) {
-          setEmployeeList(result.data.Result);
-        } else {
-          alert(result.data.Error);
-        }
-      } catch (err) {
-        console.error("Error fetching employees:", err);
-      }
-    };
-
-    fetchEmployees();
-  }, [employeeList]); // dependency on employeeList
-
-  useEffect(() => {
-    const fetchDepartments = async () => {
-      try {
-        const result = await axios.get("http://localhost:8080/auth/department");
-        if (result.data.Status) {
-          setDepartmentList(result.data.Result);
-        } else {
-          alert(result.data.Error);
-        }
-      } catch (err) {
-        console.error("Error fetching departments:", err);
-      }
-    };
-
-    fetchDepartments();
-  }, [departmentList]); // dependency on departmentList
 
   // Login / Logout:
   axios.defaults.withCredentials = true;
@@ -110,7 +114,6 @@ const StoreContextProvider = (props) => {
         credentials,
       );
       if (response.data.Status) {
-        setUserRoles(response.data.role);
         localStorage.setItem("userRole", response.data.role);
         navigate("/dashboard");
       } else {
@@ -151,6 +154,22 @@ const StoreContextProvider = (props) => {
     });
   };
 
+  //Add Department :
+  const HandleAddDepartment = async () => {
+    const response = await axios.post(
+      "http://localhost:8080/auth/add_department",
+      { department },
+    );
+    try {
+      if (response.data.Status) {
+        navigate("/dashboard/department");
+      } else {
+        alert(response.data.Error);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
   //Add Employee Details:
   const handleSubmit = async () => {
     const errors = {};
@@ -175,17 +194,15 @@ const StoreContextProvider = (props) => {
     setValidationError(errors);
 
     if (Object.keys(errors).length > 0) {
-      return; // Don't proceed with submission if there are validation errors
+      return;
     }
 
     try {
       const response = await axios.post(
         "http://localhost:8080/auth/add_employee",
-        { ...employeeDetails },
+        { employeeDetails },
       );
-
       if (response.data.Status) {
-        // Clear the form on success
         setEmployeeDetails({
           name: "",
           email: "",
@@ -210,6 +227,10 @@ const StoreContextProvider = (props) => {
         `http://localhost:8080/auth/employees/${id}`,
       );
       try {
+        const formatStartDate = format(
+          new Date(response.data.Result[0].startDate),
+          "yyyy-MM-dd",
+        );
         setEditEmployeeDetails({
           ...editEmployeeDetails,
           id: response.data.Result[0].id,
@@ -217,7 +238,7 @@ const StoreContextProvider = (props) => {
           email: response.data.Result[0].email,
           position: response.data.Result[0].position,
           department: response.data.Result[0].department,
-          startDate: response.data.Result[0].startDate,
+          startDate: formatStartDate,
         });
       } catch {
         console.log(response.data.Error);
@@ -230,7 +251,12 @@ const StoreContextProvider = (props) => {
       editEmployeeDetails,
     );
     try {
-      if (response.data.Status) {
+      if (response.data) {
+        // setEmployeeList(
+        //   employeeList.map((item) =>
+        //     item.id === id ? { ...response.data } : item,
+        //   ),
+        // );
         navigate("/dashboard/employee");
       } else {
         alert(response.data.Error);
@@ -247,6 +273,8 @@ const StoreContextProvider = (props) => {
     );
     try {
       alert(response.data.Status);
+      const afterDelete = employeeList.filter((item) => item.id !== id);
+      setEmployeeList(afterDelete);
     } catch (error) {
       console.log(error);
     }
@@ -254,7 +282,7 @@ const StoreContextProvider = (props) => {
 
   // Child Sharing
   const contextValue = {
-    userRoles,
+    userRole,
     credentials,
     setCredentials,
     error,
@@ -262,7 +290,9 @@ const StoreContextProvider = (props) => {
     handleLogin,
     handleLogout,
     employeeList,
+    setEmployeeList,
     departmentList,
+    setDepartmentList,
     editEmployeeDetails,
     setEditEmployeeDetails,
     employeeDetails,
@@ -276,6 +306,8 @@ const StoreContextProvider = (props) => {
     validationError,
     validateName,
     validatePosition,
+    HandleAddDepartment,
+    setDepartment,
   };
   return (
     <StoreContext.Provider value={contextValue}>

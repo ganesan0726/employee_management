@@ -1,29 +1,14 @@
-import axios from "axios";
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useContext } from "react";
+import { StoreContext } from "../Context/storeContext";
 
 const AddDepartment = () => {
-  const [department, setDepartment] = useState();
-  const navigate = useNavigate();
+  const { setDepartment, HandleAddDepartment } = useContext(StoreContext);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    axios
-      .post("http://localhost:8080/auth/add_department", { department })
-      .then((result) => {
-        if (result.data.Status) {
-          navigate("/dashboard/department");
-        } else {
-          alert(result.data.Error);
-        }
-      })
-      .catch((err) => console.log(err));
-  };
   return (
     <div className="d-flex justify-content-center align-items-center h-75 ">
       <div className="p-3 rounded w-25 border shadow">
         <h2>Add Department</h2>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={(e) => e.preventDefault()}>
           <div className="mb-3">
             <label htmlFor="department">
               <strong className="fs-6">Department:</strong>
@@ -36,7 +21,10 @@ const AddDepartment = () => {
               className="form-control rounded-0"
             />
           </div>
-          <button className="btn btn-success w-100 rounded-3 mb-2">
+          <button
+            className="btn btn-success w-100 rounded-3 mb-2"
+            onClick={() => HandleAddDepartment()}
+          >
             Add Department
           </button>
         </form>

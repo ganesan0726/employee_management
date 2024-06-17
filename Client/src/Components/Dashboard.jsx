@@ -4,13 +4,13 @@ import { Link, Outlet } from "react-router-dom";
 import { StoreContext } from "../Context/storeContext";
 
 const Dashboard = () => {
-  const { handleLogout, userRoles } = useContext(StoreContext);
+  const { handleLogout, userRole } = useContext(StoreContext);
 
   return (
-    <div className="container-fluid">
-      <div className="row flex-nowrap">
+    <div className="container-fluid overflow-hidden vh-100 custom-container">
+      <div className="row flex-nowrap h-100">
         <div className="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-dark">
-          <div className="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100">
+          <div className="d-flex flex-column align-items-center align-items-sm-start px-2 pt-2 text-white min-vh-100">
             <Link
               to="/dashboard"
               className="d-flex align-items-center pb-3 mb-md-1 mt-md-3 me-md-auto text-white text-decoration-none"
@@ -32,7 +32,7 @@ const Dashboard = () => {
                   <span className="ms-2 d-none d-sm-inline">Dashboard</span>
                 </Link>
               </li>
-              {userRoles === "admin" && (
+              {userRole === "admin" && (
                 <>
                   <li className="nav-item w-100">
                     <Link
@@ -72,10 +72,14 @@ const Dashboard = () => {
           </div>
         </div>
         <div className="col m-0 p-0">
-          <div className="p-2 d-flex justify-content-center shadow">
-            <h4>Employee Management System</h4>
+          <div className="p-2 d-flex justify-content-start justify-content-lg-center shadow">
+            <h4 className="fs-md-4 fs-lg-5 fw-bolder">
+              Employee Management System
+            </h4>
           </div>
-          <Outlet />
+          <div className="content-container flex-grow-1 overflow-scroll">
+            <Outlet />
+          </div>
         </div>
       </div>
     </div>
